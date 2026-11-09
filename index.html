@@ -1,8 +1,7 @@
-```html
 <!DOCTYPE html>
 <html lang="en" data-ov="ui-sophisticated">
 <head>
-<title>HawkRGB — 300-Frame RGB Keyframe &amp; Script IDE (forefronthawk.com)</title>
+<title>HawkRGB Pro — Chroma Config Script, Light-Show Choreographer &amp; Screen Saver Studio (forefronthawk.com)</title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#090B10">
@@ -65,56 +64,121 @@ input[type=color]{padding:1px;width:36px;height:30px;min-height:30px}
 </style>
 
 <style>
-.rgb-grid {
+.rgb-workspace {
   display:grid;
-  grid-template-columns:repeat(10, minmax(0, 1fr));
-  gap:8px;
-  padding:14px;
-  background:var(--plate);
-  border-radius:14px;
-  border:2px solid var(--deck-border);
+  grid-template-columns:1fr;
+  gap:10px;
 }
-.rgb-cell {
-  height:72px;
-  border-radius:9px;
-  background:#111520;
-  border:2px solid var(--c, #10B981);
-  box-shadow:0 0 12px var(--c, #10B981);
+@media(min-width:960px){
+  .rgb-workspace { grid-template-columns:1fr 310px; }
+}
+/* Authentic HawkChroma Mechanical Key Deck inside HawkRGB! */
+.plate {
+  background:var(--plate);
+  border:2px solid var(--deck-border);
+  border-radius:16px;
+  padding:12px;
+  box-shadow:inset 0 3px 10px rgba(0,0,0,0.6);
+}
+#rgbMatrix {
+  display:grid;
+  grid-template-columns:repeat(var(--cols, 10), minmax(0, 1fr));
+  grid-auto-rows:var(--kh, 72px);
+  gap:6px;
+}
+.key {
+  position:relative;
+  min-width:0;
+  padding:3px;
+  border-radius:10px;
+  background:#1B1E26;
+  border:2px solid var(--k, #10B981);
+  box-shadow:0 0 12px var(--k, #10B981);
+  cursor:pointer;
+  transition:transform 0.07s;
+}
+.key:active { transform:translateY(3px) scale(0.96); }
+.key.sel-cell { outline:3px solid #FFFFFF; outline-offset:2px; }
+.cap {
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:space-between;
+  border-radius:7px;
+  padding:4px 2px 3px;
+  background:linear-gradient(180deg, #232938 0%, #161A24 100%);
+  color:#F8FAFC;
+  overflow:hidden;
+}
+.cap b {
+  display:block;
+  width:100%;
+  height:26%;
+  max-height:15px;
+  border-radius:4px;
+  background:var(--k, #10B981);
+}
+.cap span { font:800 clamp(8px, 2.2vw, 11.5px) var(--font); white-space:nowrap; overflow:hidden; max-width:100%; }
+.cap small { font:600 8.5px var(--mono); color:#D4AF37; }
+
+/* Full-Viewport Screen Saver Overlay */
+#screenSaverOverlay {
+  position:fixed;
+  inset:0;
+  background:#020408;
+  z-index:200;
   display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:center;
-  cursor:pointer;
-  font:800 12px var(--mono);
-  color:#FFF;
+}
+#saverCanvas {
+  width:100%;
+  height:100%;
+  display:block;
+}
+.saver-hud {
+  position:absolute;
+  bottom:18px;
+  right:18px;
+  display:flex;
+  gap:8px;
+  background:rgba(15,23,42,0.82);
+  padding:6px 12px;
+  border-radius:999px;
+  border:1px solid var(--accent);
 }
 </style>
 </head>
 <body>
 <div class="wrap">
 
-  <!-- SHARED FOREFRONTHAWK.COM TOP SUBDOMAIN BANNER & CUSTOMIZER -->
+  <!-- SHARED FOREFRONTHAWK.COM 5-APP TOP SUBDOMAIN BANNER, MOBILE PASTE & CUSTOMIZER -->
   <header class="bar" style="justify-content:space-between">
-    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+    <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
       <a href="https://forefronthawk.com" class="brand" style="text-decoration:none;color:var(--text)">🦅 Forefront<i>Hawk</i></a>
-      <span class="chip">HawkRGB Script Studio</span>
+      <span class="chip">HawkRGB Script, Show & Screen Saver Studio</span>
       <nav class="seg" id="suiteNavSeg" aria-label="ForefrontHawk Subdomain Navigation">
-        <a href="https://chroma.forefronthawk.com" data-sub="https://chroma.forefronthawk.com" class="sub-link nav-pill" aria-pressed="false">🎹 Chroma</a>
-        <a href="https://draw.forefronthawk.com" data-sub="https://draw.forefronthawk.com" class="sub-link nav-pill" aria-pressed="false">💡 HawkDraw</a>
-        <a href="https://shine.forefronthawk.com" data-sub="https://shine.forefronthawk.com" class="sub-link nav-pill" aria-pressed="false">⚡ HawkShine</a>
+        <a href="https://chroma.forefronthawk.com" data-sub="https://chroma.forefronthawk.com" class="sub-link nav-pill" >🎹 Chroma</a>
+        <a href="https://draw.forefronthawk.com" data-sub="https://draw.forefronthawk.com" class="sub-link nav-pill" >💡 HawkDraw</a>
+        <a href="https://shine.forefronthawk.com" data-sub="https://shine.forefronthawk.com" class="sub-link nav-pill" >⚡ HawkShine</a>
         <a href="https://rgb.forefronthawk.com" data-sub="https://rgb.forefronthawk.com" class="sub-link nav-pill" aria-current="page">🎞️ HawkRGB</a>
+        <a href="https://calls.forefronthawk.com" data-sub="https://calls.forefronthawk.com" class="sub-link nav-pill" >🎙️ HawkCalls</a>
       </nav>
     </div>
-    <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
-      <button id="openChromaPopupBtn" type="button" class="chip" style="cursor:pointer;border-color:var(--accent);color:var(--accent)" title="Open chroma.forefronthawk.com in a linked companion window for live cross-subdomain color picking">🪟 Pair Chroma Window</button>
-      <span id="chromaLiveSwatch" class="swatch-pill" style="background:#10B981;color:#080B10">#10B981 (GRN)</span>
+    <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap">
+      <span id="chromaLiveSwatch" class="swatch-pill" style="background:#10B981;color:#080B10" title="Active Ecosystem Color">#10B981 (GRN)</span>
+      <input id="mobilePasteColorIn" type="text" placeholder="Paste #HEX" value="#10B981" style="width:88px;font:700 11.5px var(--mono);text-align:center" title="Long-press here on your phone to Paste any color from another tab, or type a Hex code!">
+      <button id="pasteFromClipBtn" type="button" class="chip" style="cursor:pointer;border-color:var(--accent);color:var(--accent);font-weight:700" title="1-Tap Read Color from Phone/OS Clipboard">📋 Paste Color</button>
+      <button id="openChromaPopupBtn" type="button" class="chip" style="cursor:pointer" title="Open chroma.forefronthawk.com in a linked companion window">🪟 Pair Chroma</button>
       <button id="toggleSharedCustBtn" type="button">🛠️ UI &amp; Skin</button>
     </div>
   </header>
 
   <section id="sharedCustPanel" class="bar" hidden>
     <div class="subcard">
-      <span class="subhead">Shared forefronthawk.com UI (Travels Across All Sites)</span>
+      <span class="subhead">Shared forefronthawk.com UI (Travels Across All 5 Sites)</span>
       <label>🎛️ Overlay <select id="sharedOverlaySel"></select></label>
       <label>UI Theme
         <select id="sharedThemeSel">
@@ -153,28 +217,127 @@ input[type=color]{padding:1px;width:36px;height:30px;min-height:30px}
   </section>
 
 
+  <!-- Top Mode & Timeline Bar -->
   <section class="bar">
     <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;width:100%">
-      <button id="rgbPlayBtn" style="background:#059669;color:#fff;font-weight:800">▶ Play Timeline</button>
+      <button id="rgbPlayBtn" type="button" style="background:#059669;color:#fff;font-weight:800">▶ Play Timeline</button>
       <label>Frame <b id="rgbFrameNum">1</b> / <b id="rgbFrameTotal">120</b>
-        <input type="range" id="rgbScrub" min="0" max="119" value="0" style="width:160px">
+        <input type="range" id="rgbScrub" min="0" max="119" value="0" style="width:140px">
       </label>
-      <button id="rgbAddFrameBtn">➕ Add Frame (Max 300)</button>
-      <button id="rgbDupFrameBtn">📋 Duplicate Frame</button>
-      <button id="rgbGenGradientBtn" style="border-color:var(--accent);color:var(--accent)">🌊 Fill Wave Generator</button>
-      <button id="rgbLoadHawkMarqueeBtn">🦅 Load forefronthawk.com Marquee</button>
-      <button id="rgbBroadcastToChromaBtn" style="background:#7C3AED;color:#fff;font-weight:700">📡 Push Script to HawkChroma</button>
-      <button id="rgbExportCsvBtn" style="background:#0284C7;color:#fff;font-weight:700;margin-left:auto">📥 Export 300-Frame CSV</button>
+      <label>Grid
+        <select id="rgbGridSizeSel" title="Match any HawkChroma Matrix Configuration!">
+          <option value="2x10" selected>2×10 Standard (20 Keys)</option>
+          <option value="3x10">3×10 Extended (30 Keys)</option>
+          <option value="4x10">4×10 Studio (40 Keys)</option>
+          <option value="6x12">6×12 Max Matrix (72 Keys)</option>
+        </select>
+      </label>
+      <button id="rgbAddFrameBtn" type="button">➕ Add Frame</button>
+      <button id="rgbDupFrameBtn" type="button">📋 Dup Frame</button>
+      <button id="rgbUploadSongBtn" type="button" style="background:#0284C7;color:#fff;font-weight:700">🎵 Import CSV / Song</button>
+      <input type="file" id="rgbSongFileIn" accept=".csv,text/csv" hidden>
+      <button id="launchSaverBtn" type="button" style="background:var(--accent);color:#04121C;font-weight:800;margin-left:auto">🖥️ Launch Screen Saver</button>
     </div>
   </section>
 
-  <main class="deck">
-    <div style="display:flex;justify-content:space-between;align-items:center">
-      <span class="chip">Tap any key below to paint it with the active HawkChroma color (<b id="paintHintHex">#10B981</b>)</span>
-      <label>Key Text Override <input id="cellTextIn" maxlength="8" placeholder="Optional char" style="width:110px"></label>
-    </div>
-    <div id="rgbMatrix" class="rgb-grid"></div>
+  <!-- Main Workspace: Left (Chroma-Style Mechanical Matrix + Generators) | Right (3D Laser Cue Track & Screen Saver Builder) -->
+  <main class="rgb-workspace">
+    
+    <!-- LEFT: HAWKCHROMA MECHANICAL MATRIX CHOREOGRAPHER -->
+    <section class="deck">
+      <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:6px">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+          <span class="subhead">1. HawkChroma Matrix Script Editor</span>
+          <input type="color" id="directPaintColorIn" value="#10B981" title="Direct Key Paint Color">
+          <span class="chip">Tap or drag across keys to paint (<b id="paintHintHex">#10B981</b>)</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:5px">
+          <input id="cellTextIn" maxlength="8" placeholder="Key Label" style="width:90px">
+          <label>Ring Halo <input type="color" id="ringHaloIn" value="#D4AF37"></label>
+        </div>
+      </div>
+
+      <!-- Authentic HawkChroma Switch Plate & Mechanical Keys -->
+      <div class="plate">
+        <div id="rgbMatrix"></div>
+      </div>
+
+      <!-- Procedural Script & Show Generators (Up to 300 Frames) -->
+      <div class="subcard">
+        <span class="subhead">Procedural 300-Frame Script Generators:</span>
+        <button id="rgbLoadHawkMarqueeBtn" type="button" style="border-color:var(--accent);color:var(--accent);font-weight:700">🦅 forefronthawk.com Marquee</button>
+        <button id="rgbGenGradientBtn" type="button">🌊 Rainbow Wave</button>
+        <button id="rgbGenFlameBtn" type="button">🔥 Thermal Flame</button>
+        <button id="rgbGenMatrixBtn" type="button">💻 Matrix Code Rain</button>
+        <button id="rgbGenLaserShowBtn" type="button">⚡ 3D Laser Show Sync</button>
+      </div>
+    </section>
+
+    <!-- RIGHT: HAWKSHINE 3D LASER TRACK, SCREEN SAVER CREATOR & EXPORTS -->
+    <aside class="deck" style="justify-content:space-between">
+      <div class="subcard" style="flex-direction:column;align-items:stretch">
+        <span class="subhead">2. HawkShine 3D Laser Cue Track</span>
+        <label style="justify-content:space-between">Frame Laser Geo
+          <select id="frameLaserGeoSel">
+            <option value="fan">📐 3D Fan</option>
+            <option value="tunnel">🌀 Z-Vortex Tunnel</option>
+            <option value="lissajous">♾️ 3D Lissajous Knot</option>
+            <option value="cube">🧊 3D Wire Cube</option>
+            <option value="sky">🌊 Liquid Sky</option>
+          </select>
+        </label>
+        <label style="justify-content:space-between">Frame Strobe Hit
+          <input type="checkbox" id="frameStrobeChk" style="min-height:18px;width:18px">
+        </label>
+        <button id="beamToShineBtn" type="button" style="background:#7C3AED;color:#fff;font-weight:700">⚡ Beam Show to HawkShine</button>
+        <button id="rgbBroadcastToChromaBtn" type="button" style="background:#059669;color:#fff;font-weight:700">🎹 Push Script to HawkChroma</button>
+      </div>
+
+      <!-- Screen Saver Creator Studio -->
+      <div class="subcard" style="flex-direction:column;align-items:stretch">
+        <span class="subhead">3. Screen Saver Creator Studio</span>
+        <label style="justify-content:space-between">Saver Visual Style
+          <select id="saverStyleSel" style="font-weight:700;border-color:var(--accent)">
+            <option value="marquee3d">🦅 3D Neon Marquee Grid</option>
+            <option value="starfield">🌌 Hyperdrive RGB Starfield</option>
+            <option value="matrix">💻 Digital Matrix Rain</option>
+            <option value="ribbons">🌈 Plasma Silk Ribbons</option>
+            <option value="lasers">⚡ Volumetric Laser Stage</option>
+          </select>
+        </label>
+        <label style="justify-content:space-between">Marquee Text
+          <input id="saverTextIn" value="FOREFRONTHAWK.COM" maxlength="28" style="width:145px;font:700 11px var(--mono)">
+        </label>
+        <label style="justify-content:space-between">Idle Auto-Start
+          <select id="saverIdleSel">
+            <option value="0">Manual Launch Only</option>
+            <option value="15">After 15 sec idle</option>
+            <option value="30">After 30 sec idle</option>
+            <option value="60">After 1 min idle</option>
+          </select>
+        </label>
+        <button id="downloadStandaloneSaverBtn" type="button" style="border-color:var(--accent);color:var(--accent);font-weight:800">💾 Download Standalone Screen Saver (.html)</button>
+      </div>
+
+      <!-- Export Scripts & Configs -->
+      <div class="subcard" style="flex-direction:column;align-items:stretch">
+        <span class="subhead">4. Export Script &amp; Chroma Config</span>
+        <button id="rgbExportCsvBtn" type="button" style="background:#0284C7;color:#fff;font-weight:700">📥 Export 300-Frame Script (.csv)</button>
+        <button id="rgbExportChromaCfgBtn" type="button" title="Export current frame as a full HawkChroma Configuration CSV">⚙️ Export as HawkChroma Config (.csv)</button>
+      </div>
+    </aside>
+
   </main>
+</div>
+
+<!-- FULL-SCREEN INTERACTIVE SCREEN SAVER OVERLAY -->
+<div id="screenSaverOverlay" hidden>
+  <canvas id="saverCanvas" width="1280" height="720"></canvas>
+  <div class="saver-hud">
+    <span class="chip" id="saverModeReadout">🦅 ForefrontHawk Screen Saver</span>
+    <button id="cycleSaverStyleBtn" type="button" class="chip" style="cursor:pointer;color:var(--accent);border-color:var(--accent)">✨ Next Saver Style</button>
+    <button id="exitSaverBtn" type="button" class="chip" style="cursor:pointer;background:#7F1D1D;color:#fff">✕ Exit Saver</button>
+  </div>
 </div>
 
 <script>
@@ -328,7 +491,85 @@ function applySharedUiToDom(){
   if(typeof onChromaColorReceived==="function")onChromaColorReceived(UI_STATE.activeColor,UI_STATE.activeLabel);
 }
 
+
+function parseAnyColorString(str){
+  if(!str) return null;
+  str = String(str).trim();
+  // Match 6-digit hex with or without #
+  var mHex = str.match(/#?([0-9A-Fa-f]{6})\b/);
+  if(mHex) return "#" + mHex[1].toUpperCase();
+  // Match rgb(r,g,b)
+  var mRgb = str.match(/rgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/i);
+  if(mRgb){
+    var r = Math.min(255, +mRgb[1]).toString(16).padStart(2,"0");
+    var g = Math.min(255, +mRgb[2]).toString(16).padStart(2,"0");
+    var b = Math.min(255, +mRgb[3]).toString(16).padStart(2,"0");
+    return ("#" + r + g + b).toUpperCase();
+  }
+  return null;
+}
+
+function applyPastedOrSyncedColor(rawStr, sourceLabel){
+  var hx = parseAnyColorString(rawStr);
+  if(!hx) return false;
+  UI_STATE.activeColor = hx;
+  UI_STATE.activeLabel = sourceLabel || "PASTED";
+  var pIn = document.getElementById("mobilePasteColorIn");
+  if(pIn) pIn.value = hx;
+  saveAndBroadcastUi(true);
+  return true;
+}
+
+function wireMobileTabSyncAndPaste(){
+  // 1. Instant sync whenever user switches back to this browser tab on iOS / Android!
+  window.addEventListener("focus", function(){ loadSharedUi(); });
+  document.addEventListener("visibilitychange", function(){
+    if(!document.hidden) loadSharedUi();
+  });
+
+  // 2. Global paste listener (pasting anywhere on the page immediately applies the color!)
+  window.addEventListener("paste", function(e){
+    if(e.target && (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") && e.target.id !== "mobilePasteColorIn") return;
+    var txt = (e.clipboardData || window.clipboardData).getData("text");
+    if(applyPastedOrSyncedColor(txt, "CLIPBOARD")){
+      e.preventDefault();
+    }
+  });
+
+  // 3. Dedicated Mobile Paste Input Box & 1-Tap Paste Button in Header
+  var pIn = document.getElementById("mobilePasteColorIn");
+  if(pIn){
+    pIn.addEventListener("input", function(){
+      applyPastedOrSyncedColor(this.value, "INPUT");
+    });
+    pIn.addEventListener("paste", function(e){
+      var txt = (e.clipboardData || window.clipboardData).getData("text");
+      if(applyPastedOrSyncedColor(txt, "PASTE")){
+        e.preventDefault();
+      }
+    });
+  }
+  var pBtn = document.getElementById("pasteFromClipBtn");
+  if(pBtn){
+    pBtn.onclick = async function(){
+      try{
+        if(navigator.clipboard && navigator.clipboard.readText){
+          var txt = await navigator.clipboard.readText();
+          if(applyPastedOrSyncedColor(txt, "CLIP")){
+            this.textContent = "✓ Applied " + UI_STATE.activeColor;
+            var btn = this;
+            setTimeout(function(){ btn.textContent = "📋 Paste Color"; }, 1800);
+            return;
+          }
+        }
+      }catch(err){}
+      if(pIn){ pIn.focus(); pIn.select(); }
+    };
+  }
+}
+
 function initSharedCustomizerBar(){
+  wireMobileTabSyncAndPaste();
   var popBtn=document.getElementById("openChromaPopupBtn");
   if(popBtn){
     popBtn.onclick=function(){
@@ -413,13 +654,17 @@ if(chromaChan){
   };
 }
 
+
 function onChromaColorReceived(hex){
-  var el=document.getElementById("paintHintHex");
-  if(el){el.textContent=hex;el.style.color=hex}
+  var el = document.getElementById("paintHintHex");
+  if(el){ el.textContent = hex; el.style.color = hex; }
+  var pIn = document.getElementById("directPaintColorIn");
+  if(pIn) pIn.value = hex;
 }
+
 (function(){
-  var frames=[],curF=0,playing=false,timer=0,cells=[];
-  var mat=document.getElementById("rgbMatrix");
+  var rows = 2, cols = 10, frames = [], curF = 0, playing = false, timer = 0, cells = [], paintingDown = false;
+  var mat = document.getElementById("rgbMatrix");
 
   function hslHex(h,s,l){
     l/=100;var a=s*Math.min(l,1-l)/100;
@@ -428,120 +673,368 @@ function onChromaColorReceived(hex){
   }
 
   function genHawkMarquee(){
-    var msg="   FOREFRONTHAWK.COM   ";
-    frames=[];
-    for(var f=0;f<120;f++){
-      var cols=[],lbls=[],shift=f%msg.length,baseH=(f*6)%360;
-      for(var i=0;i<20;i++){
-        var r=(i/10)|0,c=i%10;
-        var ch=msg.charAt((c+shift+r*3)%msg.length);
-        var hx=ch!==" "?hslHex((baseH+c*28+r*40)%360,95,58):hslHex((baseH+180)%360,70,18);
-        cols.push(hx);
-        lbls.push(r===0?(ch!==" "?"["+ch+"]":"···"):"FOREFRONTHAWK.COM".charAt(c)||"🦅");
+    var msg = "   " + (document.getElementById("saverTextIn").value || "FOREFRONTHAWK.COM").toUpperCase() + "   ";
+    var n = rows * cols;
+    frames = [];
+    for(var f=0; f<120; f++){
+      var fCols = [], fLbls = [], shift = f % msg.length, baseH = (f * 6) % 360;
+      for(var i=0; i<n; i++){
+        var r = (i / cols) | 0, c = i % cols;
+        var ch = msg.charAt((c + shift + r * 3) % msg.length);
+        var hx = ch !== " " ? hslHex((baseH + c * 28 + r * 40) % 360, 95, 58) : hslHex((baseH + 180) % 360, 70, 18);
+        fCols.push(hx);
+        fLbls.push(r === 0 ? (ch !== " " ? "[" + ch + "]" : "···") : ("FOREFRONTHAWK.COM".charAt(c % 17) || "🦅"));
       }
-      frames.push({ring:hslHex(baseH,95,55),colors:cols,labels:lbls});
+      frames.push({ ring: hslHex(baseH, 95, 55), geo: "fan", strobe: f % 16 === 0, colors: fCols, labels: fLbls });
     }
-    curF=0;syncTimelineUi();
+    curF = 0; syncTimelineUi();
   }
 
   function buildGrid(){
-    mat.innerHTML="";cells=[];
-    for(var i=0;i<20;i++){
-      var b=document.createElement("div");
-      b.className="rgb-cell";
+    mat.innerHTML = ""; cells = [];
+    var n = rows * cols;
+    mat.style.setProperty("--cols", cols);
+    mat.style.setProperty("--kh", rows > 3 ? "54px" : "72px");
+    for(var i=0; i<n; i++){
+      var b = document.createElement("button");
+      b.type = "button"; b.className = "key";
+      b.innerHTML = '<div class="cap"><b></b><span></span><small></small></div>';
       (function(idx){
-        b.onclick=function(){
-          var fr=frames[curF];if(!fr)return;
-          fr.colors[idx]=UI_STATE.activeColor||"#10B981";
-          var txt=document.getElementById("cellTextIn").value.trim();
-          if(txt)fr.labels[idx]=txt;
-          renderFrame();
-        };
+        b.addEventListener("pointerdown", function(e){
+          e.preventDefault(); paintingDown = true; paintKeyCell(idx);
+        });
+        b.addEventListener("pointerenter", function(){
+          if(paintingDown) paintKeyCell(idx);
+        });
       })(i);
-      mat.appendChild(b);cells.push(b);
+      mat.appendChild(b); cells.push(b);
     }
+  }
+  window.addEventListener("pointerup", function(){ paintingDown = false; });
+
+  function paintKeyCell(idx){
+    var fr = frames[curF]; if(!fr) return;
+    var hx = document.getElementById("directPaintColorIn").value.toUpperCase() || UI_STATE.activeColor || "#10B981";
+    fr.colors[idx] = hx;
+    var txt = document.getElementById("cellTextIn").value.trim();
+    if(txt) fr.labels[idx] = txt;
+    renderFrame();
   }
 
   function renderFrame(){
-    var fr=frames[curF];if(!fr)return;
-    for(var i=0;i<20;i++){
-      var hx=fr.colors[i]||"#10B981",lb=fr.labels[i]||("K"+(i+1));
-      cells[i].style.setProperty("--c",hx);
-      cells[i].style.background=hx+"33";
-      cells[i].innerHTML='<span>'+lb+'</span><small style="font-size:9px;opacity:0.8">'+hx+'</small>';
+    var fr = frames[curF]; if(!fr) return;
+    var n = rows * cols;
+    for(var i=0; i<n; i++){
+      var hx = fr.colors[i] || "#10B981", lb = fr.labels[i] || ("K" + (i+1));
+      var b = cells[i]; if(!b) continue;
+      b.style.setProperty("--k", hx);
+      b.children[0].children[1].textContent = lb;
+      b.children[0].children[2].textContent = hx;
     }
-    document.getElementById("rgbFrameNum").textContent=curF+1;
-    document.getElementById("rgbFrameTotal").textContent=frames.length;
-    var sc=document.getElementById("rgbScrub");
-    sc.max=Math.max(0,frames.length-1);sc.value=curF;
+    document.getElementById("rgbFrameNum").textContent = curF + 1;
+    document.getElementById("rgbFrameTotal").textContent = frames.length;
+    var sc = document.getElementById("rgbScrub");
+    sc.max = Math.max(0, frames.length - 1); sc.value = curF;
+    document.getElementById("ringHaloIn").value = fr.ring || "#D4AF37";
+    document.getElementById("frameLaserGeoSel").value = fr.geo || "fan";
+    document.getElementById("frameStrobeChk").checked = !!fr.strobe;
   }
 
-  function syncTimelineUi(){renderFrame()}
+  function syncTimelineUi(){ renderFrame(); }
 
-  document.getElementById("rgbScrub").oninput=function(){curF=+this.value;renderFrame()};
-  document.getElementById("rgbPlayBtn").onclick=function(){
-    playing=!playing;
-    this.textContent=playing?"⏹ Stop":"▶ Play Timeline";
+  document.getElementById("directPaintColorIn").oninput = function(){
+    UI_STATE.activeColor = this.value.toUpperCase();
+    saveAndBroadcastUi(true);
+  };
+  document.getElementById("ringHaloIn").oninput = function(){
+    if(frames[curF]) frames[curF].ring = this.value.toUpperCase();
+  };
+  document.getElementById("frameLaserGeoSel").onchange = function(){
+    if(frames[curF]) frames[curF].geo = this.value;
+  };
+  document.getElementById("frameStrobeChk").onchange = function(){
+    if(frames[curF]) frames[curF].strobe = this.checked;
+  };
+
+  document.getElementById("rgbGridSizeSel").onchange = function(){
+    var pts = this.value.split("x"); rows = +pts[0]; cols = +pts[1];
+    buildGrid(); genHawkMarquee();
+  };
+  document.getElementById("rgbScrub").oninput = function(){ curF = +this.value; renderFrame(); };
+  document.getElementById("rgbPlayBtn").onclick = function(){
+    playing = !playing;
+    this.textContent = playing ? "⏹ Stop" : "▶ Play Timeline";
     if(playing){
-      timer=setInterval(function(){
-        curF=(curF+1)%frames.length;renderFrame();
-      },100);
+      timer = setInterval(function(){
+        curF = (curF + 1) % frames.length; renderFrame();
+      }, 95);
     }else clearInterval(timer);
   };
 
-  document.getElementById("rgbAddFrameBtn").onclick=function(){
-    if(frames.length>=300)return;
-    var cur=frames[curF];
-    frames.splice(curF+1,0,{ring:cur.ring,colors:cur.colors.slice(),labels:cur.labels.slice()});
-    curF++;syncTimelineUi();
+  document.getElementById("rgbAddFrameBtn").onclick = function(){
+    if(frames.length >= 300) return;
+    var cur = frames[curF];
+    frames.splice(curF + 1, 0, { ring: cur.ring, geo: cur.geo, strobe: cur.strobe, colors: cur.colors.slice(), labels: cur.labels.slice() });
+    curF++; syncTimelineUi();
   };
-  document.getElementById("rgbDupFrameBtn").onclick=function(){
-    if(frames.length>=300)return;
-    var cur=frames[curF];
-    frames.push({ring:cur.ring,colors:cur.colors.slice(),labels:cur.labels.slice()});
-    curF=frames.length-1;syncTimelineUi();
+  document.getElementById("rgbDupFrameBtn").onclick = function(){
+    if(frames.length >= 300) return;
+    var cur = frames[curF];
+    frames.push({ ring: cur.ring, geo: cur.geo, strobe: cur.strobe, colors: cur.colors.slice(), labels: cur.labels.slice() });
+    curF = frames.length - 1; syncTimelineUi();
   };
-  document.getElementById("rgbGenGradientBtn").onclick=function(){
-    frames=[];
-    for(var f=0;f<90;f++){
-      var cols=[],lbls=[];
-      for(var i=0;i<20;i++){
-        cols.push(hslHex((f*4+i*18)%360,94,55));
-        lbls.push("K"+(i+1));
-      }
-      frames.push({ring:hslHex((f*4)%360,95,55),colors:cols,labels:lbls});
+
+  // Procedural Generators
+  document.getElementById("rgbLoadHawkMarqueeBtn").onclick = genHawkMarquee;
+  document.getElementById("rgbGenGradientBtn").onclick = function(){
+    var n = rows * cols; frames = [];
+    for(var f=0; f<90; f++){
+      var cList = [], lList = [];
+      for(var i=0; i<n; i++){ cList.push(hslHex((f*4 + i*(360/n)) % 360, 94, 55)); lList.push("K" + (i+1)); }
+      frames.push({ ring: hslHex((f*4)%360, 95, 55), geo: "tunnel", strobe: false, colors: cList, labels: lList });
     }
-    curF=0;syncTimelineUi();
+    curF = 0; syncTimelineUi();
   };
-  document.getElementById("rgbLoadHawkMarqueeBtn").onclick=genHawkMarquee;
+  document.getElementById("rgbGenFlameBtn").onclick = function(){
+    var n = rows * cols; frames = [];
+    for(var f=0; f<90; f++){
+      var cList = [], lList = [];
+      for(var i=0; i<n; i++){
+        var r = (i/cols)|0, c = i%cols;
+        var h = (12 + Math.sin(f*0.3 + c)*18 + r*10 + 360) % 360;
+        var l = 38 + Math.cos(f*0.4 - r)*22;
+        cList.push(hslHex(h, 96, l)); lList.push("🔥");
+      }
+      frames.push({ ring: "#EF4444", geo: "fan", strobe: false, colors: cList, labels: lList });
+    }
+    curF = 0; syncTimelineUi();
+  };
+  document.getElementById("rgbGenMatrixBtn").onclick = function(){
+    var n = rows * cols, glyphs = "012345789ZXYﾊﾐﾋｰｳｼﾅﾓ"; frames = [];
+    for(var f=0; f<90; f++){
+      var cList = [], lList = [];
+      for(var i=0; i<n; i++){
+        var drop = (f + i*3) % 7;
+        cList.push(hslHex(130, 95, drop === 0 ? 70 : drop === 1 ? 48 : 16));
+        lList.push(glyphs.charAt((f + i*5) % glyphs.length));
+      }
+      frames.push({ ring: "#00FF41", geo: "cube", strobe: false, colors: cList, labels: lList });
+    }
+    curF = 0; syncTimelineUi();
+  };
+  document.getElementById("rgbGenLaserShowBtn").onclick = function(){
+    var n = rows * cols, geos = ["fan","tunnel","lissajous","cube","sky"]; frames = [];
+    for(var f=0; f<120; f++){
+      var gType = geos[Math.floor(f / 24) % geos.length], isKick = (f % 8 === 0);
+      var cList = [], lList = [];
+      for(var i=0; i<n; i++){
+        cList.push(hslHex((f*8 + i*25) % 360, 95, isKick ? 68 : 42));
+        lList.push(gType.slice(0,4).toUpperCase());
+      }
+      frames.push({ ring: isKick ? "#FFFFFF" : "#D4AF37", geo: gType, strobe: isKick, colors: cList, labels: lList });
+    }
+    curF = 0; syncTimelineUi();
+  };
 
-  document.getElementById("rgbBroadcastToChromaBtn").onclick=function(){
+  // Beam to HawkChroma & HawkShine
+  function pushFramesToSuite(btnEl, msgText){
     try{
-      var hc=JSON.parse(localStorage.getItem("hawkchroma_v4")||"{}");
-      hc.customFrames=frames.slice(0,300);
-      hc.demoPattern="custom-script";
-      localStorage.setItem("hawkchroma_v4",JSON.stringify(hc));
-      if(suiteChan)suiteChan.postMessage({type:"FFH_SCRIPT_PUSH",frames:frames.slice(0,300)});
-      this.textContent="✓ Pushed "+frames.length+" Frames to HawkChroma!";
-      var btn=this;setTimeout(function(){btn.textContent="📡 Push Script to HawkChroma"},2200);
+      var hc = JSON.parse(localStorage.getItem("hawkchroma_v4") || "{}");
+      hc.customFrames = frames.slice(0, 300);
+      hc.demoPattern = "custom-script";
+      localStorage.setItem("hawkchroma_v4", JSON.stringify(hc));
+      writeRootDomainCookie(UI_STATE);
+      if(suiteChan) suiteChan.postMessage({ type: "FFH_SCRIPT_PUSH", bpm: 128, frames: frames.slice(0, 300) });
+      if(window.opener) try { window.opener.postMessage({ type: "FFH_SCRIPT_PUSH", bpm: 128, frames: frames.slice(0, 300) }, "*"); } catch(e){}
+      if(chromaPopupWin && !chromaPopupWin.closed) try { chromaPopupWin.postMessage({ type: "FFH_SCRIPT_PUSH", bpm: 128, frames: frames.slice(0, 300) }, "*"); } catch(e){}
+      var orig = btnEl.textContent;
+      btnEl.textContent = msgText;
+      setTimeout(function(){ btnEl.textContent = orig; }, 2200);
     }catch(e){}
+  }
+  document.getElementById("rgbBroadcastToChromaBtn").onclick = function(){
+    pushFramesToSuite(this, "✓ Pushed " + frames.length + "f to HawkChroma!");
+  };
+  document.getElementById("beamToShineBtn").onclick = function(){
+    pushFramesToSuite(this, "✓ Beamed Show to HawkShine!");
   };
 
-  document.getElementById("rgbExportCsvBtn").onclick=function(){
-    var hdr=["frame","ring_hex"];
-    for(var k=1;k<=20;k++)hdr.push("k"+k+"_hex");
-    for(var m=1;m<=20;m++)hdr.push("k"+m+"_label");
-    var lines=[hdr.join(",")];
-    frames.slice(0,300).forEach(function(fr,idx){
-      var r=[idx+1,fr.ring||"#10B981"].concat(fr.colors).concat(fr.labels.map(function(l){return'"'+String(l||"").replace(/"/g,'""')+'"'}));
+  // Import & Export CSVs
+  document.getElementById("rgbUploadSongBtn").onclick = function(){ document.getElementById("rgbSongFileIn").click(); };
+  document.getElementById("rgbSongFileIn").onchange = function(e){
+    var file = e.target.files && e.target.files[0]; if(!file) return;
+    var reader = new FileReader();
+    reader.onload = function(ev){
+      var rLines = String(ev.target.result || "").split(/\r?\n/), parsed = [];
+      var n = rows * cols;
+      for(var i=1; i<rLines.length; i++){
+        if(parsed.length >= 300) break;
+        var line = rLines[i].trim(); if(!line) continue;
+        var c = line.split(","); if(c.length < 4) continue;
+        var cList = c.slice(2, 2 + n).map(function(x){ return x.trim().toUpperCase(); });
+        var lList = c.slice(2 + n, 2 + n*2).map(function(l){ return (l||"").replace(/^"|"$/g, ""); });
+        parsed.push({ ring: c[1], geo: "fan", strobe: false, colors: cList, labels: lList });
+      }
+      if(parsed.length){ frames = parsed; curF = 0; syncTimelineUi(); }
+    };
+    reader.readAsText(file);
+  };
+
+  document.getElementById("rgbExportCsvBtn").onclick = function(){
+    var n = rows * cols, hdr = ["frame","ring_hex"];
+    for(var k=1; k<=n; k++) hdr.push("k" + k + "_hex");
+    for(var m=1; m<=n; m++) hdr.push("k" + m + "_label");
+    hdr.push("bpm","kick","snare");
+    var lines = [hdr.join(",")];
+    frames.slice(0, 300).forEach(function(fr, idx){
+      var r = [idx+1, fr.ring || "#10B981"]
+        .concat(fr.colors.slice(0, n))
+        .concat(fr.labels.slice(0, n).map(function(l){ return '"' + String(l||"").replace(/"/g,'""') + '"'; }))
+        .concat([128, fr.strobe ? 1 : 0, 0]);
       lines.push(r.join(","));
     });
-    var blob=new Blob([lines.join("\n")],{type:"text/csv;charset=utf-8"});
-    var a=document.createElement("a");
-    a.href=URL.createObjectURL(blob);
-    a.download="hawkrgb_custom_script_"+frames.length+"frames.csv";
-    a.click();
+    var blob = new Blob([lines.join("\n")], {type: "text/csv;charset=utf-8"});
+    var a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "hawkrgb_show_" + frames.length + "frames.csv"; a.click();
   };
+
+  document.getElementById("rgbExportChromaCfgBtn").onclick = function(){
+    var fr = frames[curF] || frames[0];
+    var lines = ["section,key,index,value,extra", "setting,rows,0," + rows + ",", "setting,cols,0," + cols + ",", "setting,overlay,0," + UI_STATE.overlay + ","];
+    for(var i=0; i<rows*cols; i++){
+      lines.push(["cell","key",i,fr.colors[i]||"#10B981",'"'+String(fr.labels[i]||"").replace(/"/g,'""')+'"'].join(","));
+    }
+    var blob = new Blob([lines.join("\n")], {type: "text/csv;charset=utf-8"});
+    var a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "hawkchroma_config_" + rows + "x" + cols + ".csv"; a.click();
+  };
+
+  // =========================================================================
+  // 3. INTERACTIVE FULL-VIEWPORT SCREEN SAVER ENGINE + STANDALONE EXPORTER
+  // =========================================================================
+  var saverActive = false, saverRaf = 0, saverTick = 0, lastInputTime = Date.now();
+  var sCv = document.getElementById("saverCanvas"), sCtx = sCv.getContext("2d");
+
+  function renderSaverLoop(){
+    if(!saverActive) return;
+    saverTick += 0.035;
+    var style = document.getElementById("saverStyleSel").value;
+    var msg = (document.getElementById("saverTextIn").value || "FOREFRONTHAWK.COM").toUpperCase();
+    var fr = frames[Math.floor(saverTick * 8) % Math.max(1, frames.length)] || frames[0];
+
+    sCtx.fillStyle = "rgba(2, 4, 8, 0.22)";
+    sCtx.fillRect(0, 0, sCv.width, sCv.height);
+
+    if(style === "starfield"){
+      var cx = sCv.width / 2, cy = sCv.height / 2;
+      for(var i=0; i<80; i++){
+        var z = ((i * 17 + saverTick * 45) % 100) + 1;
+        var ang = i * 2.4;
+        var sx = cx + Math.cos(ang) * (4000 / z);
+        var sy = cy + Math.sin(ang) * (4000 / z);
+        var col = fr.colors[i % fr.colors.length] || "#38BDF8";
+        sCtx.fillStyle = col;
+        sCtx.beginPath(); sCtx.arc(sx, sy, Math.max(1.5, (100 - z) / 14), 0, Math.PI * 2); sCtx.fill();
+      }
+    }else if(style === "matrix"){
+      sCtx.font = "800 22px monospace";
+      for(var c=0; c<40; c++){
+        var col = fr.colors[c % fr.colors.length] || "#00FF41";
+        var y = ((c * 83 + saverTick * 180) % (sCv.height + 60)) - 30;
+        sCtx.fillStyle = col;
+        sCtx.fillText(msg.charAt(c % msg.length), c * (sCv.width / 40) + 10, y);
+      }
+    }else if(style === "ribbons"){
+      for(var r=0; r<6; r++){
+        sCtx.beginPath();
+        sCtx.strokeStyle = fr.colors[(r * 3) % fr.colors.length] || "#D4AF37";
+        sCtx.lineWidth = 4;
+        for(var x=0; x<=sCv.width; x+=20){
+          var y = sCv.height/2 + Math.sin(x*0.006 + saverTick + r*0.8)*160 + Math.cos(x*0.01 - saverTick)*60;
+          if(x===0) sCtx.moveTo(x,y); else sCtx.lineTo(x,y);
+        }
+        sCtx.stroke();
+      }
+    }else if(style === "lasers"){
+      for(var l=0; l<8; l++){
+        var lx = 100 + l * 150, ly = 30;
+        var col = fr.colors[l % fr.colors.length] || "#10B981";
+        sCtx.strokeStyle = col; sCtx.lineWidth = 2;
+        for(var ray=-4; ray<=4; ray++){
+          sCtx.beginPath(); sCtx.moveTo(lx, ly);
+          sCtx.lineTo(lx + Math.sin(saverTick + l)*220 + ray*45, sCv.height - 20);
+          sCtx.stroke();
+        }
+      }
+    }else{
+      // 3D Neon Marquee Grid
+      var cellW = (sCv.width - 160) / cols, cellH = 110;
+      for(var rIdx=0; rIdx<rows; rIdx++){
+        for(var cIdx=0; cIdx<cols; cIdx++){
+          var kIdx = rIdx * cols + cIdx;
+          var col = fr.colors[kIdx] || "#D4AF37";
+          var x = 80 + cIdx * cellW, y = (sCv.height/2 - (rows*cellH)/2) + rIdx * cellH + Math.sin(saverTick*2 + cIdx*0.5)*18;
+          sCtx.strokeStyle = col; sCtx.lineWidth = 3;
+          sCtx.strokeRect(x + 6, y + 6, cellW - 12, cellH - 12);
+          sCtx.fillStyle = col; sCtx.font = "800 22px monospace"; sCtx.textAlign = "center";
+          sCtx.fillText(fr.labels[kIdx] || msg.charAt(cIdx % msg.length), x + cellW/2, y + cellH/2 + 8);
+        }
+      }
+    }
+    saverRaf = requestAnimationFrame(renderSaverLoop);
+  }
+
+  function setScreenSaver(on){
+    saverActive = on;
+    document.getElementById("screenSaverOverlay").hidden = !on;
+    if(on){
+      sCtx.fillStyle = "#020408"; sCtx.fillRect(0, 0, sCv.width, sCv.height);
+      saverRaf = requestAnimationFrame(renderSaverLoop);
+    }else cancelAnimationFrame(saverRaf);
+  }
+  document.getElementById("launchSaverBtn").onclick = function(){ setScreenSaver(true); };
+  document.getElementById("exitSaverBtn").onclick = function(){ setScreenSaver(false); };
+  document.getElementById("cycleSaverStyleBtn").onclick = function(){
+    var sel = document.getElementById("saverStyleSel");
+    sel.selectedIndex = (sel.selectedIndex + 1) % sel.options.length;
+    document.getElementById("saverModeReadout").textContent = "🦅 " + sel.options[sel.selectedIndex].text;
+  };
+
+  // Idle Screen Saver Auto-Timer
+  ["pointerdown","pointermove","keydown"].forEach(function(ev){
+    window.addEventListener(ev, function(){ lastInputTime = Date.now(); }, {passive: true});
+  });
+  setInterval(function(){
+    var idleSec = +document.getElementById("saverIdleSel").value;
+    if(idleSec > 0 && !saverActive && (Date.now() - lastInputTime > idleSec * 1000)){
+      setScreenSaver(true);
+    }
+  }, 1000);
+
+  // Download Self-Contained Standalone Screen Saver HTML File
+  document.getElementById("downloadStandaloneSaverBtn").onclick = function(){
+    var style = document.getElementById("saverStyleSel").value;
+    var msg = (document.getElementById("saverTextIn").value || "FOREFRONTHAWK.COM").toUpperCase();
+    var saverHtml = '<!DOCTYPE html><html><head><meta charset="utf-8"><title>ForefrontHawk Screen Saver</title>'
+      + '<style>body,html{margin:0;padding:0;width:100%;height:100%;background:#020408;overflow:hidden;cursor:none}canvas{width:100%;height:100%;display:block}</style></head>'
+      + '<body><canvas id="c" width="1920" height="1080"></canvas><script>'
+      + 'var frames=' + JSON.stringify(frames.slice(0,120)) + ',style="' + style + '",msg="' + msg + '",t=0,cv=document.getElementById("c"),ctx=cv.getContext("2d");'
+      + 'function loop(){t+=0.04;var fr=frames[Math.floor(t*8)%frames.length];ctx.fillStyle="rgba(2,4,8,0.2)";ctx.fillRect(0,0,1920,1080);'
+      + 'for(var i=0;i<20;i++){var col=fr.colors[i]||"#D4AF37",c=i%10,r=(i/10)|0,x=160+c*160,y=360+r*180+Math.sin(t*2+c*0.5)*30;'
+      + 'ctx.strokeStyle=col;ctx.lineWidth=4;ctx.strokeRect(x,y,140,140);ctx.fillStyle=col;ctx.font="800 32px monospace";ctx.textAlign="center";ctx.fillText(fr.labels[i]||msg.charAt(c%msg.length),x+70,y+80);}'
+      + 'requestAnimationFrame(loop);}loop();window.onclick=function(){if(document.documentElement.requestFullscreen)document.documentElement.requestFullscreen()};'
+      + '<\/script></body></html>';
+    var blob = new Blob([saverHtml], {type: "text/html;charset=utf-8"});
+    var a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "ForefrontHawk_ScreenSaver.html"; a.click();
+  };
+
+  if(suiteChan){
+    var origRgMsg = suiteChan.onmessage;
+    suiteChan.onmessage = function(e){
+      if(origRgMsg) origRgMsg(e);
+      if(e.data && e.data.type === "FFH_SCRIPT_PUSH" && e.data.frames){
+        frames = e.data.frames.slice(0, 300); curF = 0; syncTimelineUi();
+      }
+    };
+  }
 
   initSharedCustomizerBar();
   buildGrid();
